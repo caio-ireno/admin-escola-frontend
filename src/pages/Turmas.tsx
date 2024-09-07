@@ -77,7 +77,7 @@ const TurmaPage: React.FC = () => {
               className="flex justify-between items-center p-4 hover:bg-gray-100 transition duration-300"
             >
               <div className="text-lg font-medium">
-                {turma.descricao} - {turma.professor.id}
+                {turma.descricao} - Professor ID {turma.professor.id}
               </div>
               <div className="space-x-2">
                 <button
