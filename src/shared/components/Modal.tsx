@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { ProfessorProps } from "../service/professores";
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,15 +10,32 @@ interface ModalProps {
     materia: string;
     observacoes: string;
   }) => void;
+  professor?: ProfessorProps; // prop adicional para edição
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
+export const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  professor,
+}) => {
   const [formData, setFormData] = useState({
     nome: "",
     idade: 0,
     materia: "",
     observacoes: "",
   });
+
+  useEffect(() => {
+    if (professor) {
+      setFormData({
+        nome: professor.nome,
+        idade: professor.idade,
+        materia: professor.materia,
+        observacoes: professor.observacoes,
+      });
+    }
+  }, [professor]);
 
   if (!isOpen) return null;
 
@@ -35,7 +53,9 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg w-1/3">
-        <h2 className="text-xl font-bold mb-4">Adicionar Professor</h2>
+        <h2 className="text-xl font-bold mb-4">
+          {professor ? "Editar Professor" : "Adicionar Professor"}
+        </h2>
         <form>
           <div className="mb-4">
             <label className="block text-gray-700">Nome:</label>
@@ -82,7 +102,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
               onClick={handleSubmit}
               className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
             >
-              Adicionar
+              {professor ? "Salvar" : "Adicionar"}
             </button>
             <button
               type="button"
