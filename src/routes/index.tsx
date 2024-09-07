@@ -1,9 +1,9 @@
 import { Route, Routes } from "react-router-dom";
-import { Turmas } from "../pages/Turmas";
 import { useDrawerContext } from "../shared/context/DrawerContext";
 import { useEffect } from "react";
 import Professores from "../pages/Professores";
 import AlunosPage from "../pages/Alunos";
+import TurmaPage from "../pages/Turmas";
 
 export const AppRoutes = () => {
   const { setDrawerOption } = useDrawerContext();
@@ -30,7 +30,7 @@ export const AppRoutes = () => {
     <Routes>
       <Route path="/professores" element={<Professores />} />
       <Route path="/alunos" element={<AlunosPage />} />
-      <Route path="/turmas" element={<Turmas />} />
+      <Route path="/turmas" element={<TurmaPage />} />
     </Routes>
   );
 };

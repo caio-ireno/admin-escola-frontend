@@ -3,13 +3,33 @@ import api from '../axios-config'
 export interface TurmaProps {
   id?: number;
   descricao: string;
-  professor: { id: number };
+  professor: ProfessorProps; // Atualize para incluir o professor completo
+  ativo: boolean;
+}
+
+
+export interface ProfessorProps {
+  id: number;
+  nome: string; // Certifique-se de que o nome está aqui
+}
+
+
+export interface ProfessorProps {
+  id: number;
+  nome: string; // Adicione o nome do professor aqui
+}
+
+export interface TurmaProps {
+  id?: number;
+  descricao: string;
+  professor: ProfessorProps; // Deve incluir todas as propriedades de ProfessorProps
   ativo: boolean;
 }
 
 type TurmaComTotalCount = {
   data: TurmaProps[]
 }
+
 
 const getAll = async (): Promise<TurmaComTotalCount | Error> => {
   try {
