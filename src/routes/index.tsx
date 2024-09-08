@@ -12,6 +12,10 @@ export const AppRoutes = () => {
   useEffect(() => {
     setDrawerOption([
       {
+        label: "Home",
+        path: "/",
+      },
+      {
         label: "Professores",
         path: "/professores",
       },
@@ -23,10 +27,6 @@ export const AppRoutes = () => {
       {
         label: "Alunos",
         path: "/alunos",
-      },
-      {
-        label: "Home",
-        path: "/",
       },
     ]);
   }, [setDrawerOption]);
