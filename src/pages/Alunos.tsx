@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AlunoProps, AlunoServices } from "../shared/service/alunos";
+import { TurmaProps, TurmaServices } from "../shared/service/turmas"; // Importe o serviço de turmas
 import { ModalAluno } from "../shared/components/ModalAluno";
 
 const AlunosPage: React.FC = () => {
@@ -7,14 +8,39 @@ const AlunosPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedAluno, setSelectedAluno] = useState<AlunoProps | null>(null);
+  const [turmasCache, setTurmasCache] = useState<{ [key: number]: TurmaProps }>(
+    {}
+  );
 
   const fetchAlunos = async () => {
-    setLoading(true);
     const result = await AlunoServices.getAll();
     if (!(result instanceof Error)) {
       setAlunos(result.data);
+      // Verifique se as turmas estão no cache e busque se necessário
+      result.data.forEach(async (aluno) => {
+        if (aluno.turma && !turmasCache[aluno.turma.id]) {
+          await getTurmaName(aluno.turma.id);
+        }
+      });
     }
     setLoading(false);
+  };
+
+  const getTurmaName = async (turmaId: number) => {
+    if (turmasCache[turmaId]) {
+      return turmasCache[turmaId].descricao;
+    } else {
+      const result = await TurmaServices.getById(turmaId);
+      if (!(result instanceof Error)) {
+        setTurmasCache((prev) => ({
+          ...prev,
+          [turmaId]: result,
+        }));
+        return result.descricao;
+      } else {
+        return "Turma não encontrada";
+      }
+    }
   };
 
   const handleDelete = async (id: number) => {
@@ -35,9 +61,12 @@ const AlunosPage: React.FC = () => {
     notaSegundoSemestre: number;
   }) => {
     const result = await AlunoServices.createAluno(formData);
+    console.log(result);
     if (!(result instanceof Error)) {
       fetchAlunos(); // Atualiza a lista de alunos após adicionar
       setShowModal(false); // Fecha o modal
+    } else {
+      alert("Erro ao cadastrar um aluno, verifique se o ID turma é valido");
     }
   };
 
@@ -58,6 +87,8 @@ const AlunosPage: React.FC = () => {
         fetchAlunos(); // Atualiza a lista após edição
         setShowModal(false); // Fecha o modal
         setSelectedAluno(null); // Limpa o aluno selecionado
+      } else {
+        alert("Erro ao editar um aluno, verifique se o ID turma é valido");
       }
     }
   };
@@ -69,7 +100,7 @@ const AlunosPage: React.FC = () => {
 
   useEffect(() => {
     fetchAlunos();
-  }, []);
+  });
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -91,7 +122,9 @@ const AlunosPage: React.FC = () => {
               className="flex justify-between items-center p-4 hover:bg-gray-100 transition duration-300"
             >
               <div className="text-lg font-medium">
-                {aluno.nome} - {aluno.turma.id} - Média{" "}
+                {aluno.nome} - Turma{": "}
+                {turmasCache[aluno.turma.id]?.descricao || "Carregando..."} -
+                Média{" "}
                 {(aluno.notaPrimeiroSemestre + aluno.notaSegundoSemestre) / 2}
               </div>
               <div className="space-x-2">

@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { TurmaProps, TurmaServices } from "../shared/service/turmas";
+import {
+  ProfessorProps,
+  ProfessorServices,
+} from "../shared/service/professores"; // Importe o serviço de professores
 import { ModalTurma } from "../shared/components/ModalTurma";
 
 const TurmaPage: React.FC = () => {
@@ -7,14 +11,40 @@ const TurmaPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedTurma, setSelectedTurma] = useState<TurmaProps | null>(null);
+  const [professoresCache, setProfessoresCache] = useState<{
+    [key: number]: ProfessorProps;
+  }>({});
 
   const fetchTurmas = async () => {
-    setLoading(true);
+    //setLoading(true);
     const result = await TurmaServices.getAll();
     if (!(result instanceof Error)) {
       setTurmas(result.data);
+      setLoading(false);
+      // Verifique se os professores estão no cache e busque se necessário
+      result.data.forEach(async (turma) => {
+        if (turma.professor && !professoresCache[turma.professor.id]) {
+          await getProfessorName(turma.professor.id);
+        }
+      });
     }
-    setLoading(false);
+  };
+
+  const getProfessorName = async (professorId: number) => {
+    if (professoresCache[professorId]) {
+      return professoresCache[professorId].nome;
+    } else {
+      const result = await ProfessorServices.getById(professorId);
+      if (!(result instanceof Error)) {
+        setProfessoresCache((prev) => ({
+          ...prev,
+          [professorId]: result,
+        }));
+        return result.nome;
+      } else {
+        return "Professor não encontrado";
+      }
+    }
   };
 
   const handleDelete = async (id: number) => {
@@ -31,6 +61,8 @@ const TurmaPage: React.FC = () => {
     if (!(result instanceof Error)) {
       fetchTurmas(); // Atualiza a lista de turmas após adicionar
       setShowModal(false); // Fecha o modal
+    } else {
+      alert("Erro ao adicionar nova turma - Verifique o ID do professor");
     }
   };
 
@@ -44,6 +76,8 @@ const TurmaPage: React.FC = () => {
         fetchTurmas(); // Atualiza a lista após edição
         setShowModal(false); // Fecha o modal
         setSelectedTurma(null); // Limpa a turma selecionada
+      } else {
+        alert("Erro ao editar nova turma - Verifique o ID do professor");
       }
     }
   };
@@ -55,7 +89,7 @@ const TurmaPage: React.FC = () => {
 
   useEffect(() => {
     fetchTurmas();
-  }, []);
+  });
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -77,7 +111,8 @@ const TurmaPage: React.FC = () => {
               className="flex justify-between items-center p-4 hover:bg-gray-100 transition duration-300"
             >
               <div className="text-lg font-medium">
-                {turma.descricao} - Professor ID {turma.professor.id}
+                TurmaId: {turma.id} - {turma.descricao} - Professor:{" "}
+                {professoresCache[turma.professor.id]?.nome || "Carregando..."}
               </div>
               <div className="space-x-2">
                 <button

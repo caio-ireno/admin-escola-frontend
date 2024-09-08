@@ -5,7 +5,6 @@ import {
 } from "../shared/service/professores";
 import { Modal } from "../shared/components/Modal";
 
-// Atualizamos o tipo para garantir que 'id' nunca seja undefined durante edição
 interface ProfessorPropsComId extends Omit<ProfessorProps, "id"> {
   id: number; // Certifica que o 'id' está sempre presente quando necessário
 }
@@ -117,7 +116,7 @@ const ProfessoresPage: React.FC = () => {
               className="flex justify-between items-center p-4"
             >
               <div className="text-lg font-medium">
-                {professor.nome} - {professor.materia}
+                Id:{professor.id} - {professor.nome} - {professor.materia}
               </div>
               <div className="space-x-2">
                 <button
