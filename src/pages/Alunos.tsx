@@ -91,7 +91,8 @@ const AlunosPage: React.FC = () => {
               className="flex justify-between items-center p-4 hover:bg-gray-100 transition duration-300"
             >
               <div className="text-lg font-medium">
-                {aluno.nome} - {aluno.turma.id}
+                {aluno.nome} - {aluno.turma.id} - Média{" "}
+                {(aluno.notaPrimeiroSemestre + aluno.notaSegundoSemestre) / 2}
               </div>
               <div className="space-x-2">
                 <button
