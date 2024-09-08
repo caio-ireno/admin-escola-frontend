@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Professores from "../pages/Professores";
 import AlunosPage from "../pages/Alunos";
 import TurmaPage from "../pages/Turmas";
+import Home from "../pages";
 
 export const AppRoutes = () => {
   const { setDrawerOption } = useDrawerContext();
@@ -23,6 +24,10 @@ export const AppRoutes = () => {
         label: "Alunos",
         path: "/alunos",
       },
+      {
+        label: "Home",
+        path: "/",
+      },
     ]);
   }, [setDrawerOption]);
 
@@ -31,6 +36,7 @@ export const AppRoutes = () => {
       <Route path="/professores" element={<Professores />} />
       <Route path="/alunos" element={<AlunosPage />} />
       <Route path="/turmas" element={<TurmaPage />} />
+      <Route path="/" element={<Home />} />
     </Routes>
   );
 };
